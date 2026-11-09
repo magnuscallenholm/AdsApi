@@ -5,3 +5,48 @@ GET {{AdsApi_HostAddress}}/Ads/
 
 ### Finns inte – förväntat 404
 GET {{AdsApi_HostAddress}}/Ads/999
+
+### Försöker sätta id och datum – båda ska ignoreras
+POST {{AdsApi_HostAddress}}/Ads
+Content-Type: application/json
+
+{
+  "id": 999,
+  "createDate": "2000-01-01",
+  "title": "Gaming headset",
+  "description": "Wireless headset with mic.",
+  "price": 450,
+  "category": "Accessories",
+  "email": "test@example.com"
+}
+
+### Uppdatera – förväntat 204
+PUT {{AdsApi_HostAddress}}/Ads/1
+Content-Type: application/json
+
+{
+  "title": "PlayStation 5 – price lowered!",
+  "description": "Disc edition, barely used. Two controllers included.",
+  "price": 3900,
+  "category": "Consoles",
+  "email": "erik.lund@example.com"
+}
+
+### Kontrollera ändringen – förväntat 200, nytt pris, telephone = null, oförändrat datum
+GET {{AdsApi_HostAddress}}/Ads/1
+
+### Finns inte – förväntat 404
+PUT {{AdsApi_HostAddress}}/Ads/999
+Content-Type: application/json
+
+{
+  "title": "Ghost ad",
+  "description": "Does not exist.",
+  "price": 100,
+  "category": "Games",
+  "email": "test@example.com"
+}
+
+### Ta bort - förväntat 204, körs igen förväntat 404
+DELETE {{AdsApi_HostAddress}}/Ads/1
+Content-Type: application/json
