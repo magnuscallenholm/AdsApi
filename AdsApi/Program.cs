@@ -1,3 +1,5 @@
+using AdsApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdsApi
 {
@@ -13,7 +15,17 @@ namespace AdsApi
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
-            var app = builder.Build();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddTransient<DataInitializer>();
+
+            var app = builder.Build();           
+
+            // efter builder.Build():
+            using (var scope = app.Services.CreateScope())
+            {
+                scope.ServiceProvider.GetRequiredService<DataInitializer>().MigrateData();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
