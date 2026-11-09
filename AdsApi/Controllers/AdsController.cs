@@ -2,6 +2,7 @@
 using AdsApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AdsApi.Controllers
 {
@@ -91,6 +92,36 @@ namespace AdsApi.Controllers
             await _dbContext.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult<Ad>> Patch(int id, JsonPatchDocument<Ad> patchDoc)
+        {
+            var existingAd = await _dbContext.Ads.FindAsync(id);
+
+            if (existingAd == null)
+            {
+                return NotFound();
+            }
+
+            var protectedPaths = new[] { "/id", "/createDate" };
+
+            if (patchDoc.Operations.Any(operation => protectedPaths.Contains(operation.path, StringComparer.OrdinalIgnoreCase)))
+            {
+                ModelState.AddModelError("path", "Id and CreateDate cannot be modified.");
+                return ValidationProblem(ModelState);
+            }
+
+            patchDoc.ApplyTo(existingAd, ModelState);
+
+            if (!TryValidateModel(existingAd))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(existingAd);
         }
     }
 }
