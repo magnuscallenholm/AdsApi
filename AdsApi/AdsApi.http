@@ -50,3 +50,27 @@ Content-Type: application/json
 ### Ta bort - förväntat 204, körs igen förväntat 404
 DELETE {{AdsApi_HostAddress}}/Ads/1
 Content-Type: application/json
+
+### Ändra pris – förväntat 200
+PATCH {{AdsApi_HostAddress}}/Ads/2
+Content-Type: application/json-patch+json
+
+[
+  { "op": "replace", "path": "/price", "value": 3500 }
+]
+
+### Ogiltigt pris – förväntat 400
+PATCH {{AdsApi_HostAddress}}/Ads/2
+Content-Type: application/json-patch+json
+
+[
+  { "op": "replace", "path": "/price", "value": -500 }
+]
+
+### Finns inte – förväntat 404
+PATCH {{AdsApi_HostAddress}}/Ads/999
+Content-Type: application/json-patch+json
+
+[
+  { "op": "replace", "path": "/price", "value": 100 }
+]
