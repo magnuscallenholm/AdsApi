@@ -1,6 +1,7 @@
 @AdsApi_HostAddress = http://localhost:5269
 
-GET {{AdsApi_HostAddress}}/weatherforecast/
-Accept: application/json
+### Alla annonser  – förväntat 200 
+GET {{AdsApi_HostAddress}}/Ads/
 
-###
+### Finns inte – förväntat 404
+GET {{AdsApi_HostAddress}}/Ads/999
