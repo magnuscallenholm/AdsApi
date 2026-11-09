@@ -19,9 +19,8 @@ namespace AdsApi
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddTransient<DataInitializer>();
 
-            var app = builder.Build();           
-
-            // efter builder.Build():
+            var app = builder.Build();        
+                       
             using (var scope = app.Services.CreateScope())
             {
                 scope.ServiceProvider.GetRequiredService<DataInitializer>().MigrateData();
@@ -31,12 +30,16 @@ namespace AdsApi
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/openapi/v1.json", "AdsApi v1");
+                    options.RoutePrefix = string.Empty;
+                });
             }
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
